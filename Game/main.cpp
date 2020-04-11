@@ -1,42 +1,41 @@
 /* =============================================================
 INTRODUCTION TO GAME PROGRAMMING SE102
 
-SAMPLE 01 - SKELETON CODE
+SAMPLE 02 - SPRITE AND ANIMATION
 
 This sample illustrates how to:
 
-1/ Re-Organize intro code to allow better scalability
+1/ Render a sprite (within a sprite sheet)
+2/ How to manage sprites/animations in a game
+3/ Enhance CGameObject with sprite animation
 ================================================================ */
 
 #include <windows.h>
 #include <d3d9.h>
 #include <d3dx9.h>
-#include <vector>
 
 #include "debug.h"
 #include "Game.h"
 #include "GameObject.h"
+#include "Textures.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
-#define MAIN_WINDOW_TITLE L"01 - Skeleton"
+#define MAIN_WINDOW_TITLE L"02 - Sprite animation"
 
-#define BRICK_TEXTURE_PATH L"brick.png"
-#define MARIO_TEXTURE_PATH L"mario.png"
-
-
-#define BACKGROUND_COLOR D3DCOLOR_XRGB(255, 0, 0)
+#define BACKGROUND_COLOR D3DCOLOR_XRGB(200, 200, 255)
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
-#define MAX_FRAME_RATE 10
+#define MAX_FRAME_RATE 60
 
-using namespace std;
+#define ID_TEX_MARIO 0
+#define ID_TEX_ENEMY 10
+#define ID_TEX_MISC 20
+
+
 
 CGame *game;
-CMario *mario;
-CGameObject *brick;
-
-//vector<LPGAMEOBJECT> objects;  
+CGameObject *mario;
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -52,15 +51,65 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 /*
-Load all game resources. In this example, create a brick object and mario object
+Load all game resources
+In this example: load textures, sprites, animations and mario object
 */
 void LoadResources()
 {
-	mario = new CMario(MARIO_TEXTURE_PATH);
-	mario->SetPosition(10.0f, 130.0f);
+	CTextures * textures = CTextures::GetInstance();
 
-	brick = new CGameObject(BRICK_TEXTURE_PATH);
-	brick->SetPosition(10.0f, 100.0f);
+	textures->Add(ID_TEX_MARIO, L"textures\\mario.png", D3DCOLOR_XRGB(176, 224, 248));
+	//textures->Add(ID_ENEMY_TEXTURE, L"textures\\enemies.png", D3DCOLOR_XRGB(156, 219, 239));
+	//textures->Add(ID_TEX_MISC, L"textures\\misc.png", D3DCOLOR_XRGB(156, 219, 239));
+
+
+	CSprites * sprites = CSprites::GetInstance();
+
+	LPDIRECT3DTEXTURE9 texMario = textures->Get(ID_TEX_MARIO);
+
+	// readline => id, left, top, right 
+
+	sprites->Add(10001, 246, 154, 259, 181, texMario);
+	sprites->Add(10002, 275, 154, 290, 181, texMario);
+	sprites->Add(10003, 304, 154, 321, 181, texMario);
+
+	sprites->Add(10011, 186, 154, 199, 181, texMario);
+	sprites->Add(10012, 155, 154, 170, 181, texMario);
+	sprites->Add(10013, 125, 154, 140, 181, texMario);
+
+	/*LPDIRECT3DTEXTURE9 texMisc = textures->Get(ID_TEX_MISC);
+	sprites->Add(20001, 300, 117, 315, 132, texMisc);
+	sprites->Add(20002, 318, 117, 333, 132, texMisc);
+	sprites->Add(20003, 336, 117, 351, 132, texMisc);
+	sprites->Add(20004, 354, 117, 369, 132, texMisc);*/
+
+
+	CAnimations * animations = CAnimations::GetInstance();
+	LPANIMATION ani;
+
+	ani = new CAnimation(100);
+	ani->Add(10001);
+	ani->Add(10002);
+	ani->Add(10003);
+	animations->Add(500, ani);
+
+	ani = new CAnimation(100);
+	ani->Add(10011);
+	ani->Add(10012);
+	ani->Add(10013);
+	animations->Add(501, ani);
+
+	/*
+	ani = new CAnimation(100);
+	ani->Add(20001,1000);
+	ani->Add(20002);
+	ani->Add(20003);
+	ani->Add(20004);
+	animations->Add(510, ani);
+	*/
+
+	mario = new CGameObject();
+	mario->SetPosition(10.0f, 100.0f);
 }
 
 /*
@@ -69,12 +118,7 @@ dt: time period between beginning of last frame and beginning of this frame
 */
 void Update(DWORD dt)
 {
-	/*
-	for (int i=0;i<n;i++)
-	objects[i]->Update(dt);
-	*/
 	mario->Update(dt);
-	brick->Update(dt);
 }
 
 /*
@@ -93,10 +137,23 @@ void Render()
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 
-
 		mario->Render();
-		brick->Render();
 
+		//
+		// TEST SPRITE DRAW
+		//
+
+		/*
+		CTextures *textures = CTextures::GetInstance();
+
+		D3DXVECTOR3 p(20, 20, 0);
+		RECT r;
+		r.left = 274;
+		r.top = 234;
+		r.right = 292;
+		r.bottom = 264;
+		spriteHandler->Draw(textures->Get(ID_TEX_MARIO), &r, NULL, &p, D3DCOLOR_XRGB(255, 255, 255));
+		*/
 
 		spriteHandler->End();
 		d3ddv->EndScene();

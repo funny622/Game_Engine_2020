@@ -55,15 +55,6 @@ void CGame::Init(HWND hWnd)
 /*
 Utility function to wrap LPD3DXSPRITE::Draw
 */
-void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture)
-{
-	D3DXVECTOR3 p(x, y, 0);
-	spriteHandler->Draw(texture, NULL, NULL, &p, D3DCOLOR_XRGB(255, 255, 255));
-}
-
-/*
-Utility function to wrap LPD3DXSPRITE::Draw
-*/
 void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom)
 {
 	D3DXVECTOR3 p(x, y, 0);
