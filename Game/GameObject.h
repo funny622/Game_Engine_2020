@@ -1,10 +1,11 @@
-#pragma once
+﻿#pragma once
 
 #include <Windows.h>
 #include <d3dx9.h>
 #include <vector>
 
 #include "Sprites.h"
+#include "Animations.h"
 
 
 using namespace std;
@@ -20,14 +21,24 @@ struct CCollisionEvent
 {
 	LPGAMEOBJECT obj;
 	float t, nx, ny;
-	CCollisionEvent(float t, float nx, float ny, LPGAMEOBJECT obj = NULL) { this->t = t; this->nx = nx; this->ny = ny; this->obj = obj; }
+
+	float dx, dy;		// *RELATIVE* movement distance between this object and obj
+
+	CCollisionEvent(float t, float nx, float ny, float dx = 0, float dy = 0, LPGAMEOBJECT obj = NULL)
+	{
+		this->t = t;
+		this->nx = nx;
+		this->ny = ny;
+		this->dx = dx;
+		this->dy = dy;
+		this->obj = obj;
+	}
 
 	static bool compare(const LPCOLLISIONEVENT &a, LPCOLLISIONEVENT &b)
 	{
 		return a->t < b->t;
 	}
 };
-
 
 
 class CGameObject
@@ -49,7 +60,7 @@ public:
 
 	DWORD dt;
 
-	vector<LPANIMATION> animations;
+	LPANIMATION_SET animation_set;
 
 public:
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
@@ -60,6 +71,11 @@ public:
 	int GetState() { return this->state; }
 
 	void RenderBoundingBox();
+	void SetPosition(D3DXVECTOR2 pos) { SetPosition(pos.x, pos.y); }
+	void SetOrientation(int nx) { this->nx = nx; }
+
+	D3DXVECTOR2 GetPosition() { return D3DXVECTOR2(x, y); }
+	void SetAnimationSet(LPANIMATION_SET ani_set) { animation_set = ani_set; }
 
 	LPCOLLISIONEVENT SweptAABBEx(LPGAMEOBJECT coO);
 	void CalcPotentialCollisions(vector<LPGAMEOBJECT> *coObjects, vector<LPCOLLISIONEVENT> &coEvents);
@@ -69,9 +85,9 @@ public:
 		float &min_tx,
 		float &min_ty,
 		float &nx,
-		float &ny);
-
-	void AddAnimation(int aniId);
+		float &ny,
+		float &rdx,
+		float &rdy);
 
 	CGameObject();
 

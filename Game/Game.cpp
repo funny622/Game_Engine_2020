@@ -1,5 +1,10 @@
+#include <iostream>
+#include <fstream>
+
 #include "Game.h"
-#include "debug.h"
+#include "Utils.h"
+
+#include "ScenceGame.h"
 
 CGame * CGame::__instance = NULL;
 
@@ -30,6 +35,9 @@ void CGame::Init(HWND hWnd)
 	d3dpp.BackBufferHeight = r.bottom + 1;
 	d3dpp.BackBufferWidth = r.right + 1;
 
+	screen_height = r.bottom + 1;
+	screen_width = r.right + 1;
+
 	d3d->CreateDevice(
 		D3DADAPTER_DEFAULT,
 		D3DDEVTYPE_HAL,
@@ -55,15 +63,27 @@ void CGame::Init(HWND hWnd)
 /*
 Utility function to wrap LPD3DXSPRITE::Draw
 */
-void CGame::Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha)
+void CGame::Draw(float x, float y, int nx, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha)
 {
-	D3DXVECTOR3 p(floor(x - cam_x), floor(y - cam_y), 0);
+	D3DXVECTOR3 p(x - cam_x, y - cam_y, 0);
 	RECT r;
 	r.left = left;
 	r.top = top;
 	r.right = right;
 	r.bottom = bottom;
+	D3DXMATRIX oldTransform;
+	D3DXMATRIX newTransform;
+	spriteHandler->GetTransform(&oldTransform);
+	D3DXVECTOR2 center = D3DXVECTOR2(p.x + (right - left) / 2, p.y + (bottom - top) / 2);
+	D3DXVECTOR2 rotate = D3DXVECTOR2(nx > 0 ? -1 : 1, 1);
+	D3DXMatrixTransformation2D(&newTransform, &center, 0.0f, &rotate, NULL, 0.0f, NULL);
+	D3DXMATRIX finalTransform = newTransform * oldTransform;
+	spriteHandler->SetTransform(&finalTransform);
+
 	spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 255, 255));
+
+	spriteHandler->SetTransform(&oldTransform);
+
 }
 
 int CGame::IsKeyDown(int KeyCode)
@@ -71,7 +91,7 @@ int CGame::IsKeyDown(int KeyCode)
 	return (keyStates[KeyCode] & 0x80) > 0;
 }
 
-void CGame::InitKeyboard(LPKEYEVENTHANDLER handler)
+void CGame::InitKeyboard()
 {
 	HRESULT
 		hr = DirectInput8Create
@@ -83,7 +103,6 @@ void CGame::InitKeyboard(LPKEYEVENTHANDLER handler)
 
 	if (hr != DI_OK)
 	{
-		//DebugOut(L"[ERROR] DirectInput8Create failed!\n");
 		return;
 	}
 
@@ -92,7 +111,6 @@ void CGame::InitKeyboard(LPKEYEVENTHANDLER handler)
 	// TO-DO: put in exception handling
 	if (hr != DI_OK)
 	{
-		//DebugOut(L"[ERROR] CreateDevice failed!\n");
 		return;
 	}
 
@@ -131,13 +149,8 @@ void CGame::InitKeyboard(LPKEYEVENTHANDLER handler)
 	hr = didv->Acquire();
 	if (hr != DI_OK)
 	{
-		//DebugOut(L"[ERROR] DINPUT8::Acquire failed!\n");
 		return;
 	}
-
-	this->keyHandler = handler;
-
-	//DebugOut(L"[INFO] Keyboard has been initialized successfully\n");
 }
 
 void CGame::ProcessKeyboard()
@@ -154,13 +167,11 @@ void CGame::ProcessKeyboard()
 			HRESULT h = didv->Acquire();
 			if (h == DI_OK)
 			{
-				//DebugOut(L"[INFO] Keyboard re-acquired!\n");
 			}
 			else return;
 		}
 		else
 		{
-			//DebugOut(L"[ERROR] DINPUT::GetDeviceState failed. Error: %d\n", hr);
 			return;
 		}
 	}
@@ -174,7 +185,6 @@ void CGame::ProcessKeyboard()
 	hr = didv->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), keyEvents, &dwElements, 0);
 	if (FAILED(hr))
 	{
-		//DebugOut(L"[ERROR] DINPUT::GetDeviceData failed. Error: %d\n", hr);
 		return;
 	}
 
@@ -199,7 +209,8 @@ CGame::~CGame()
 }
 
 /*
-SweptAABB
+Standard sweptAABB implementation
+Source: GameDev.net
 */
 void CGame::SweptAABB(
 	float ml, float mt, float mr, float mb,
@@ -256,8 +267,8 @@ void CGame::SweptAABB(
 
 	if (dx == 0)
 	{
-		tx_entry = -99999999999;
-		tx_exit = 99999999999;
+		tx_entry = -999999.0f;
+		tx_exit = 999999.0f;
 	}
 	else
 	{
@@ -267,8 +278,8 @@ void CGame::SweptAABB(
 
 	if (dy == 0)
 	{
-		ty_entry = -99999999999;
-		ty_exit = 99999999999;
+		ty_entry = -99999.0f;
+		ty_exit = 99999.0f;
 	}
 	else
 	{
@@ -303,4 +314,85 @@ CGame *CGame::GetInstance()
 {
 	if (__instance == NULL) __instance = new CGame();
 	return __instance;
+}
+
+#define MAX_GAME_LINE 1024
+
+
+#define GAME_FILE_SECTION_UNKNOWN -1
+#define GAME_FILE_SECTION_SETTINGS 1
+#define GAME_FILE_SECTION_SCENES 2
+
+void CGame::_ParseSection_SETTINGS(string line)
+{
+	vector<string> tokens = split(line);
+
+	if (tokens.size() < 2) return;
+	if (tokens[0] == "start")
+		current_scene = atoi(tokens[1].c_str());
+}
+
+void CGame::_ParseSection_SCENES(string line)
+{
+	vector<string> tokens = split(line);
+
+	if (tokens.size() < 2) return;
+	int id = atoi(tokens[0].c_str());
+	LPCWSTR path = ToLPCWSTR(tokens[1]);
+
+	LPSCENE scene = new CScenceGame(id, path);
+	scenes[id] = scene;
+}
+
+/*
+Load game campaign file and load/initiate first scene
+*/
+void CGame::Load(LPCWSTR gameFile)
+{
+	ifstream f;
+	f.open(gameFile);
+	char str[MAX_GAME_LINE];
+
+	// current resource section flag
+	int section = GAME_FILE_SECTION_UNKNOWN;
+
+	while (f.getline(str, MAX_GAME_LINE))
+	{
+		string line(str);
+
+		if (line[0] == '#') continue;	// skip comment lines	
+
+		if (line == "[SETTINGS]") { section = GAME_FILE_SECTION_SETTINGS; continue; }
+		if (line == "[SCENES]") { section = GAME_FILE_SECTION_SCENES; continue; }
+
+		//
+		// data section
+		//
+		switch (section)
+		{
+		case GAME_FILE_SECTION_SETTINGS: _ParseSection_SETTINGS(line); break;
+		case GAME_FILE_SECTION_SCENES: _ParseSection_SCENES(line); break;
+		}
+	}
+	f.close();
+
+	SwitchScene(current_scene);
+}
+
+void CGame::SwitchScene(int scene_id)
+{
+	scenes[current_scene]->Unload();;
+
+	CTextures::GetInstance()->Clear();
+	CSprites::GetInstance()->Clear();
+	CAnimations::GetInstance()->Clear();
+
+	current_scene = scene_id;
+	LPSCENE s = scenes[scene_id];
+	CGame::GetInstance()->SetKeyHandler(s->GetKeyEventHandler());
+	s->Load();
+}
+D3DXVECTOR2 CGame::GetCamPos()
+{
+	return D3DXVECTOR2(cam_x, cam_y);
 }
