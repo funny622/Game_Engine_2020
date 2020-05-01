@@ -23,6 +23,8 @@ private:
 	int mapColumns;
 
 	int tileMap[500][500];
+
+	string fileMap;
 public:
 	Map();
 	~Map();
@@ -31,7 +33,8 @@ public:
 
 	Map(int _id, int _translate_y, int _translate_x);
 	// RECT GetSourceRect(int index);
-	void LoadMap(const char* filePath);
+	void SetMap(string path);
+	void LoadMap();
 	void DrawMap();
 };
 

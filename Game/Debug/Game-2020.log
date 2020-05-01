@@ -1,6 +1,10 @@
-﻿  Map.cpp
-e:\game\game-2020\game_engine_2020\game\map.cpp(35): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\game\game-2020\game_engine_2020\game\map.cpp(36): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\game\game-2020\game_engine_2020\game\map.cpp(39): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-e:\game\game-2020\game_engine_2020\game\map.cpp(40): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+﻿  ScenceGame.cpp
+e:\game\game-2020\game_engine_2020\game\scencegame.cpp(91): warning C4018: '<': signed/unsigned mismatch
+e:\game\game-2020\game_engine_2020\game\scencegame.cpp(113): warning C4018: '<': signed/unsigned mismatch
+e:\game\game-2020\game_engine_2020\game\scencegame.cpp(142): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+e:\game\game-2020\game_engine_2020\game\scencegame.cpp(143): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+e:\game\game-2020\game_engine_2020\game\scencegame.cpp(167): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+e:\game\game-2020\game_engine_2020\game\scencegame.cpp(168): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+e:\game\game-2020\game_engine_2020\game\scencegame.cpp(277): warning C4018: '<': signed/unsigned mismatch
+e:\game\game-2020\game_engine_2020\game\scencegame.cpp(287): warning C4018: '<': signed/unsigned mismatch
   Game-2020.vcxproj -> E:\Game\Game-2020\Game_Engine_2020\Debug\Game.exe

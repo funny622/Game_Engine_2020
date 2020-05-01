@@ -22,6 +22,7 @@ See scene1.txt, scene2.txt for detail format specification
 */
 
 #define SCENE_SECTION_UNKNOWN -1
+#define SCENE_SECTION_MAP 1
 #define SCENE_SECTION_TEXTURES 2
 #define SCENE_SECTION_SPRITES 3
 #define SCENE_SECTION_ANIMATIONS 4
@@ -119,11 +120,15 @@ void CScenceGame::_ParseSection_ANIMATION_SETS(string line)
 
 	CAnimationSets::GetInstance()->Add(ani_set_id, s);
 }
-//void CPlayScene::_ParseSection_MAP(string line)
-//{
-//	vector<string> tokens = split(line);
-//	//Cchuwa code
-//}
+
+void CScenceGame::_ParseSection_MAP(string line)
+{
+	vector<string> tokens = split(line);
+	if (tokens.size() < 2) return;
+	int map_id = atoi(tokens[0].c_str());
+	map = new Map(map_id, 10, 0);
+	map->SetMap(tokens[1]);
+}
 /*
 Parse a line in section [OBJECTS]
 */
@@ -180,13 +185,11 @@ void CScenceGame::_ParseSection_OBJECTS(string line)
 
 void CScenceGame::LoadMap()
 {
-	map = new Map(MAP_1, 10, 0);
-	map->LoadMap("Resources\\Map\\map_test.txt");
+	map->LoadMap();
 }
 
 void CScenceGame::Load()
 {
-	LoadMap();
 	ifstream f;
 	f.open(sceneFilePath);
 
@@ -213,6 +216,9 @@ void CScenceGame::Load()
 		if (line == "[OBJECTS]") {
 			section = SCENE_SECTION_OBJECTS; continue;
 		}
+		if (line == "[MAP]") {
+			section = SCENE_SECTION_MAP; continue;
+		}
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
@@ -225,12 +231,14 @@ void CScenceGame::Load()
 		case SCENE_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
 		case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
 		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
+		case SCENE_SECTION_MAP: _ParseSection_MAP(line); break;
 		}
 	}
 
 	f.close();
 
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
+	LoadMap();
 }
 
 void CScenceGame::Update(DWORD dt)

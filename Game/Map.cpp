@@ -18,9 +18,9 @@ Map::Map(int _id, int _translate_y, int _translate_x)
 	translate_y = _translate_y;
 	translate_x = _translate_x;
 }
-void Map::LoadMap(const char* filename)
+void Map::LoadMap()
 {
-	ifstream inp(filename, ios::in);
+	ifstream inp(fileMap, ios::in);
 	inp >> mapRows >> mapColumns >> tileWidth >> tileHeight >> tileColumns >> tileRows;
 	for (int i = 0; i < mapRows; i++)
 		for (int j = 0; j < mapColumns; j++)
@@ -59,4 +59,9 @@ void Map::DrawMap()
 			CGame::GetInstance()->Draw(pos_x, pos_y, 1, CTextures::GetInstance()->Get(1000), rectTile.left, rectTile.top, rectTile.right, rectTile.bottom);
 		}
 	}
+}
+
+void Map::SetMap(string path)
+{
+	fileMap = path;
 }
