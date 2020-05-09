@@ -37,7 +37,7 @@ void Simon::Render()
 
 	animation_set->at(ani)->Render(x, y, nx, alpha);
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 void Simon::SetState(int state)
 {

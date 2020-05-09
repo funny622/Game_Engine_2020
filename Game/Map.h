@@ -6,8 +6,8 @@
 #include "Game.h"
 
 
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
+#define SCREEN_WIDTH 480
+#define SCREEN_HEIGHT 320
 using namespace std;
 class Map
 {
@@ -25,6 +25,8 @@ private:
 	int tileMap[500][500];
 
 	string fileMap;
+	void _ParseSection_MAP_INFO(string line);
+	void _ParseSection_MAP_TILE(string line, int row);
 public:
 	Map();
 	~Map();
