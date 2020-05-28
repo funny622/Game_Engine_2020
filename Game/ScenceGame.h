@@ -8,6 +8,9 @@
 #include "Goomba.h"
 #include "Koopas.h"
 #include "Map.h"
+#include "Candle.h"
+#include "Item.h"
+#include "Torch.h"
 
 
 class CScenceGame : public CScenceManager
@@ -32,7 +35,7 @@ public:
 	virtual void Update(DWORD dt);
 	virtual void Render();
 	virtual void Unload();
-
+	virtual void RemoveObjects();
 	Simon * GetPlayer() { return player; }
 	virtual void LoadMap();
 	//friend class CPlayScenceKeyHandler;

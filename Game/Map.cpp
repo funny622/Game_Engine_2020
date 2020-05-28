@@ -99,7 +99,7 @@ void Map::DrawMap()
 	{
 		for (int i = rowCamTop; i < rowCamBottom; i++)
 		{
-			float pos_x = (j - colCamLeft) * tileWidth - remain_x + translate_x - 100;
+			float pos_x = (j - colCamLeft) * tileWidth - remain_x + translate_x;
 			float pos_y = (i - rowCamTop) * tileHeight - remain_y + translate_y;
 
 			RECT rectTile;
@@ -117,4 +117,9 @@ void Map::DrawMap()
 void Map::SetMap(string path)
 {
 	fileMap = path;
+}
+
+int Map::GetMapWidth()
+{
+	return mapColumns * tileWidth;
 }

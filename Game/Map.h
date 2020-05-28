@@ -38,5 +38,6 @@ public:
 	void SetMap(string path);
 	void LoadMap();
 	void DrawMap();
+	int GetMapWidth();
 };
 

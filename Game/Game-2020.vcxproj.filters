@@ -13,6 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Object">
+      <UniqueIdentifier>{01762f8d-4043-425c-bc63-6747fdbc0971}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Item">
+      <UniqueIdentifier>{9edfa356-07a4-4a79-8d4a-b699707307f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Candle">
+      <UniqueIdentifier>{016e66db-47c2-42f5-bb77-4555b2ee627c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Torch">
+      <UniqueIdentifier>{bd0138f6-247a-4742-b955-1c6293f6875d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scence">
+      <UniqueIdentifier>{af456b5e-987f-4e22-95b4-ab3d8a62120a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -42,19 +57,10 @@
     <ClCompile Include="KeyEventHandeler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScenceGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ScenceManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Animations.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Portal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Goomba.cpp">
@@ -62,6 +68,24 @@
     </ClCompile>
     <ClCompile Include="Koopas.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Candle.cpp">
+      <Filter>Object\Candle</Filter>
+    </ClCompile>
+    <ClCompile Include="Torch.cpp">
+      <Filter>Object\Torch</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenceManager.cpp">
+      <Filter>Header Files\Scence</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenceGame.cpp">
+      <Filter>Header Files\Scence</Filter>
+    </ClCompile>
+    <ClCompile Include="Portal.cpp">
+      <Filter>Header Files\Scence</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,19 +116,10 @@
     <ClInclude Include="KeyEventHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScenceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScenceGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Animations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Portal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Goomba.h">
@@ -112,6 +127,24 @@
     </ClInclude>
     <ClInclude Include="Koopas.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Candle.h">
+      <Filter>Object\Candle</Filter>
+    </ClInclude>
+    <ClInclude Include="Torch.h">
+      <Filter>Object\Torch</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenceGame.h">
+      <Filter>Header Files\Scence</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenceManager.h">
+      <Filter>Header Files\Scence</Filter>
+    </ClInclude>
+    <ClInclude Include="Portal.h">
+      <Filter>Header Files\Scence</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

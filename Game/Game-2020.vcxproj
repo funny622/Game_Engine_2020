@@ -124,9 +124,11 @@
   <ItemGroup>
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="Brick.cpp" />
+    <ClCompile Include="Candle.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Goomba.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="KeyEventHandeler.cpp" />
     <ClCompile Include="Koopas.cpp" />
     <ClCompile Include="main.cpp" />
@@ -137,15 +139,18 @@
     <ClCompile Include="Simon.cpp" />
     <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="Textures.cpp" />
+    <ClCompile Include="Torch.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animations.h" />
     <ClInclude Include="Brick.h" />
+    <ClInclude Include="Candle.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Goomba.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Koopas.h" />
     <ClInclude Include="Map.h" />
@@ -155,6 +160,7 @@
     <ClInclude Include="Simon.h" />
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="Textures.h" />
+    <ClInclude Include="Torch.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

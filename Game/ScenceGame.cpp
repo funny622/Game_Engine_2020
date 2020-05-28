@@ -33,6 +33,8 @@ See scene1.txt, scene2.txt for detail format specification
 #define OBJECT_TYPE_BRICK	1
 #define OBJECT_TYPE_GOOMBA	2
 #define OBJECT_TYPE_KOOPAS	3
+#define OBJECT_TYPE_CANDLE	4
+#define OBJECT_TYPE_TORCH	5
 
 #define OBJECT_TYPE_PORTAL	50
 #define MAP_1 1000
@@ -126,7 +128,7 @@ void CScenceGame::_ParseSection_MAP(string line)
 	vector<string> tokens = split(line);
 	if (tokens.size() < 2) return;
 	int map_id = atoi(tokens[0].c_str());
-	map = new Map(map_id, 10, 0);
+	map = new Map(map_id, 0, 0);
 	map->SetMap(tokens[1]);
 }
 /*
@@ -162,6 +164,18 @@ void CScenceGame::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
+	case OBJECT_TYPE_TORCH:
+	{
+		int itemID = atoi(tokens[4].c_str());
+		obj = new CTorch(itemID);
+		break;
+	}
+	case OBJECT_TYPE_CANDLE:
+	{
+		int itemID = atoi(tokens[4].c_str());
+		obj = new CCandle(itemID);
+		break;
+	}
 	case OBJECT_TYPE_PORTAL:
 	{
 		float r = atof(tokens[4].c_str());
@@ -265,7 +279,17 @@ void CScenceGame::Update(DWORD dt)
 	player->GetPosition(cx, cy);
 
 	CGame *game = CGame::GetInstance();
+	int d = game->GetScreenWidth();
 	cx -= game->GetScreenWidth() / 2;
+	if (cx < 0)
+	{
+		cx = 0;
+	}
+	int mapWidth = map->GetMapWidth();
+	if (cx > mapWidth - 320)
+	{
+		cx = mapWidth - 320;
+	}
 	cy -= game->GetScreenHeight() / 2;
 
 	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
@@ -324,4 +348,68 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 	}
 	else
 		simon->SetState(SIMON_STATE_IDLE);
+}
+
+void CScenceGame::RemoveObjects()
+{
+	for (int i = 0; i < objects.size(); i++)
+	{
+		if (dynamic_cast<CTorch*>(objects.at(i)))
+		{
+			CTorch* torch = dynamic_cast<CTorch*>(objects.at(i));
+			if (torch->isHitted)
+			{
+				float torch_x, torch_y, torch_right, torch_bottom;
+				torch->GetBoundingBox(torch_x, torch_y, torch_right, torch_bottom);
+
+				CItem* item = new CItem();
+				item->SetPosition(torch_x, torch_y);
+				item->SetSpeed(0, -0.1);
+				objects.push_back(item);
+
+				CAnimationSets* animation_sets = CAnimationSets::GetInstance();
+				LPANIMATION_SET ani_set;
+
+				ani_set = animation_sets->Get(torch->itemID);
+				item->SetType(torch->itemID);
+				item->SetAnimationSet(ani_set);
+
+				objects.erase(objects.begin() + i);
+				delete torch;
+			}
+		}
+		else if (dynamic_cast<CCandle*>(objects.at(i))) {
+			CCandle* candle = dynamic_cast<CCandle*>(objects.at(i));
+			if (candle->isHitted)
+			{
+				float x, y, r, b;
+				candle->GetBoundingBox(x, y, r, b);
+
+				CItem* item = new CItem();
+				item->SetPosition(x, y);
+				item->SetSpeed(0, -0.1);
+				objects.push_back(item);
+
+				CAnimationSets* animation_sets = CAnimationSets::GetInstance();
+				LPANIMATION_SET ani_set;
+
+				ani_set = animation_sets->Get(candle->itemID);
+				item->SetType(candle->itemID);
+				item->SetAnimationSet(ani_set);
+
+				objects.erase(objects.begin() + i);
+				delete candle;
+			}
+		}
+		else if (dynamic_cast<CItem*>(objects.at(i)))
+		{
+			CItem* item = dynamic_cast<CItem*>(objects.at(i));
+
+			if (item->GetEaten())
+			{
+				objects.erase(objects.begin() + i);
+				delete item;
+			}
+		}
+	}
 }
