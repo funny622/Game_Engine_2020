@@ -22,6 +22,31 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	dy = vy * dt;
 }
 
+int CGameObject::GetHealth()
+{
+	return health;
+}
+
+void CGameObject::SetHealth(int h)
+{
+	health = h;
+}
+
+void CGameObject::SubHealth(int th)
+{
+	health -= th;
+	if (health < 0)
+		health = 0;
+}
+
+bool CGameObject::isCollitionObjectWithObject(CGameObject* obj)
+{
+	LPCOLLISIONEVENT e = SweptAABBEx(obj); 
+	bool res = e->t > 0 && e->t <= 1.0f; 
+	delete e;
+	return res;
+}
+
 /*
 Extension of original SweptAABB to deal with two moving objects
 */

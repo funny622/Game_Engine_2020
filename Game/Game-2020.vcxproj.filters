@@ -25,8 +25,17 @@
     <Filter Include="Object\Torch">
       <UniqueIdentifier>{bd0138f6-247a-4742-b955-1c6293f6875d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Scence">
+    <Filter Include="Object\Weapon">
+      <UniqueIdentifier>{b635ae8b-569a-450b-a9e6-85bda508b790}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scence">
       <UniqueIdentifier>{af456b5e-987f-4e22-95b4-ab3d8a62120a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Simon">
+      <UniqueIdentifier>{0cef80d2-f5f3-43f1-92e9-8ab036c6fe89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Stair">
+      <UniqueIdentifier>{759da2e0-f412-4937-8e91-009cc89a4a61}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,9 +43,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sprites.cpp">
@@ -49,9 +55,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Map.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KeyEventHandeler.cpp">
@@ -79,20 +82,29 @@
       <Filter>Object\Torch</Filter>
     </ClCompile>
     <ClCompile Include="ScenceManager.cpp">
-      <Filter>Header Files\Scence</Filter>
+      <Filter>Scence</Filter>
     </ClCompile>
     <ClCompile Include="ScenceGame.cpp">
-      <Filter>Header Files\Scence</Filter>
+      <Filter>Scence</Filter>
     </ClCompile>
     <ClCompile Include="Portal.cpp">
-      <Filter>Header Files\Scence</Filter>
+      <Filter>Scence</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Object\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Simon.cpp">
+      <Filter>Object\Simon</Filter>
+    </ClCompile>
+    <ClCompile Include="Stair.cpp">
+      <Filter>Object\Stair</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sprites.h">
@@ -108,9 +120,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="define.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KeyEventHandler.h">
@@ -138,13 +147,25 @@
       <Filter>Object\Torch</Filter>
     </ClInclude>
     <ClInclude Include="ScenceGame.h">
-      <Filter>Header Files\Scence</Filter>
+      <Filter>Scence</Filter>
     </ClInclude>
     <ClInclude Include="ScenceManager.h">
-      <Filter>Header Files\Scence</Filter>
+      <Filter>Scence</Filter>
     </ClInclude>
     <ClInclude Include="Portal.h">
-      <Filter>Header Files\Scence</Filter>
+      <Filter>Scence</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>Object\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Simon.h">
+      <Filter>Object\Simon</Filter>
+    </ClInclude>
+    <ClInclude Include="Stair.h">
+      <Filter>Object\Stair</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

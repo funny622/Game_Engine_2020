@@ -34,15 +34,43 @@ class Simon : public CGameObject
 
 	float start_x;
 	float start_y;
+
+	bool isDead;
+	bool isAttack;
+	bool isSit;
+	bool isJump;
+	bool isMoving;
+	bool isExitSit;
+	bool isOnCheckStairUp;
+	bool isOnCheckStairDown;
+	bool isOnStair;
+	bool isLeftToRight;
+	bool isHurt;
+
+	int life;
+
+	static int score;
+	static int hearts;
+	int currentWeapon;
 public:
 	Simon(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void Render();
 	void SetState(int state);
+	int GetState() { return state; };
 	void SetLevel(int l) { level = 1; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
 	void Reset();
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
+	void AddHeart(int num) { hearts += num; }
+	void AddScore(int num) { score += num; }
+
+	int GetScore() { return score; }
+	int GetLife() { return life; }
+	int GetHeart() { return hearts; }
+
+	void SetCurrentWeapon(int weapon) { currentWeapon = weapon; }
+	int GetCurrentWeapon() { return currentWeapon; }
 };
 
