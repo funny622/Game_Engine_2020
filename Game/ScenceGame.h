@@ -11,6 +11,8 @@
 #include "Candle.h"
 #include "Item.h"
 #include "Torch.h"
+#include "Weapon.h"
+#include "Whip.h"
 
 
 class CScenceGame : public CScenceManager
@@ -18,6 +20,8 @@ class CScenceGame : public CScenceManager
 protected:
 	Simon * player;					// A play scene has to have player, right? 
 	Map * map;
+	CWhip * whip;
+	CWeapon * weapon;
 	vector<LPGAMEOBJECT> objects;
 
 	void _ParseSection_TEXTURES(string line);
@@ -37,7 +41,10 @@ public:
 	virtual void Unload();
 	virtual void RemoveObjects();
 	Simon * GetPlayer() { return player; }
+	CWhip * GetWhip() { return whip; }
+	CWeapon * GetWeapon() { return weapon; }
 	virtual void LoadMap();
+	void WhipUpdate(DWORD dt, int x, int y);
 	//friend class CPlayScenceKeyHandler;
 };
 

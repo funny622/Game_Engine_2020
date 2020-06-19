@@ -102,6 +102,9 @@
     <ClCompile Include="Stair.cpp">
       <Filter>Object\Stair</Filter>
     </ClCompile>
+    <ClCompile Include="Whip.cpp">
+      <Filter>Object\Weapon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -166,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="Stair.h">
       <Filter>Object\Stair</Filter>
+    </ClInclude>
+    <ClInclude Include="Whip.h">
+      <Filter>Object\Weapon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

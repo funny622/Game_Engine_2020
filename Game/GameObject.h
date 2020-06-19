@@ -64,6 +64,8 @@ public:
 
 	int health;
 
+	bool enable = true;
+
 public:
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
@@ -71,6 +73,7 @@ public:
 	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
 
 	int GetState() { return this->state; }
+	bool isEnable() { return this->enable; }
 
 	void RenderBoundingBox();
 	void SetPosition(D3DXVECTOR2 pos) { SetPosition(pos.x, pos.y); }

@@ -3,6 +3,7 @@
 
 #define CANDLE_BBOX_WIDTH  8
 #define CANDLE_BBOX_HEIGHT 16
+#define CANDLE_STATE_DESTROYED 300
 
 class CCandle : public CGameObject
 {

@@ -6,6 +6,8 @@
 #include "Textures.h"
 #include "Sprites.h"
 #include "Portal.h"
+#include "Weapon.h"
+#include "Whip.h"
 
 using namespace std;
 
@@ -318,6 +320,8 @@ void CScenceGame::Unload()
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	Simon *simon = ((CScenceGame*)scence)->GetPlayer();
+	CWhip* whip = ((CScenceGame*)scence)->GetWhip();
+	CWeapon* weapon = ((CScenceGame*)scence)->GetWeapon();
 	switch (KeyCode)
 	{
 	case DIK_SPACE:

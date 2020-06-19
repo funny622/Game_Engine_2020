@@ -3,10 +3,10 @@
 
 #define TORCH_BBOX_WIDTH				16
 #define TORCH_BBOX_HEIGHT				32
+#define TORCH_STATE_DESTROYED			200
 
 class CTorch : public CGameObject
 {
-
 public:
 	int itemID;
 	bool isHitted;
