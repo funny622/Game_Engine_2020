@@ -7,16 +7,11 @@
 #define SIMON_DIE_DEFLECT_SPEED	 0.5f
 
 #define SIMON_STATE_IDLE			0
-#define SIMON_STATE_WALKING			100
-#define SIMON_STATE_JUMP			300
-#define SIMON_STATE_DIE				400
-#define SIMON_ANI_IDLE			0
-#define SIMON_ANI_WALKING	1
-#define SIMON_ANI_JUMP			2
-#define SIMON_ANI_SIT				3
-
-
-#define SIMON_ANI_DIE				8
+#define SIMON_STATE_WALKING			1
+#define SIMON_STATE_JUMP			3
+#define SIMON_STATE_DIE				8
+#define SIMON_STATE_HIT				2
+#define SIMON_STATE_SIT				4
 
 #define	SIMON_LEVEL_SMALL	2
 
@@ -46,7 +41,9 @@ class Simon : public CGameObject
 	bool isOnStair;
 	bool isLeftToRight;
 	bool isHurt;
-
+	bool isThrowWeapon = false;
+	bool isStand;
+	bool isOnGround = false;
 	int life;
 
 	static int score;
@@ -72,5 +69,10 @@ public:
 
 	void SetCurrentWeapon(int weapon) { currentWeapon = weapon; }
 	int GetCurrentWeapon() { return currentWeapon; }
+	bool GetIsThrowWeapon() { return isThrowWeapon; }
+	void SetIsThrowWeapon(bool isThrowWeapon) { this->isThrowWeapon = isThrowWeapon; }
+	bool GetIsStand() { return isStand; }
+	void SetIsStand(bool isStand) { this->isStand = isStand; }
+	bool CheckStandGround() { return isOnGround; }
 };
 

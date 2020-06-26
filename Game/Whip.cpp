@@ -23,7 +23,7 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			float left, top, right, bottom;
 			obj->GetBoundingBox(left, top, right, bottom);
 
-			if (GetTickCount() - isRender > 200 && CheckCollision(left, top, right, bottom) == true)
+			if (GetTickCount() - isRender > 200 && CheckCollision(obj) == true)
 			{
 				if (this->enable)
 				{
@@ -36,8 +36,7 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CWhip::Render()
 {
-	if (this->nx == -1) animation_set->at(0)->Render(x, y);
-	else animation_set->at(1)->Render(x, y);
+	animation_set->at(0)->Render(x, y, nx); 
 
 	RenderBoundingBox();
 }
@@ -69,7 +68,7 @@ void CWhip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 	}
 }
 
-bool CWhip::CheckCollision(float obj_left, float obj_top, float obj_right, float obj_bottom)
+bool CWhip::CheckCollision(CGameObject* obj)
 {
 	float whip_left,
 		whip_top,
@@ -78,7 +77,7 @@ bool CWhip::CheckCollision(float obj_left, float obj_top, float obj_right, float
 
 	GetBoundingBox(whip_left, whip_top, whip_right, whip_bottom);
 
-	//return CGameObject::isCollitionObjectWithObject(whip_left, whip_top, whip_right, whip_bottom, obj_left, obj_top, obj_right, obj_bottom);
+	return CGameObject::isCollitionObjectWithObject(obj);
 	return true;
 }
 

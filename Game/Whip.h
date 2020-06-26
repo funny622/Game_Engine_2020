@@ -16,7 +16,7 @@ public:
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
 	void SetWhipPosition(int simonX, int simonY, bool isStand);
-	bool CheckCollision(float obj_left, float obj_top, float obj_right, float obj_bottom);
+	bool CheckCollision(CGameObject * object);
 
 	void StartHit();
 };

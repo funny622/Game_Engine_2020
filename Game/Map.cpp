@@ -1,13 +1,24 @@
-#include "Map.h"
+﻿#include "Map.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <fstream>
-#define MAX_MAP_LINE 1024
-#define MAP_SECTION_UNKNOWN 0
-#define MAP_SECTION_INFO 1
-#define MAP_SECTION_TILE_MAP 2
-Map::Map()
+
+Map::Map(int ID, LPCWSTR filePath_texture, LPCWSTR filePath_data, int mapRows, int mapColumns, int tileRows, int tileColumns, int tileWidth, int tileHeight)
 {
+	this->ID = ID;
+
+	this->filePath_texture = filePath_texture;
+	this->filePath_data = filePath_data;
+
+	this->mapRows = mapRows;
+	this->mapColumns = mapColumns;
+	this->tileColumns = tileColumns;
+	this->tileRows = tileRows;
+	this->tileWidth = tileWidth;
+	this->tileHeight = tileHeight;
+
+	LoadMap();
+	Load();
 }
 
 
@@ -15,111 +26,73 @@ Map::~Map()
 {
 }
 
-Map::Map(int _id, int _translate_y, int _translate_x)
+void Map::Load()
 {
-	ID = _id;
-	translate_y = _translate_y;
-	translate_x = _translate_x;
+	ifstream fs(filePath_data, ios::in);
+
+	if (fs.fail())
+	{
+		fs.close();
+		return;
+	}
+
+	string line;
+
+	while (!fs.eof())
+	{
+		getline(fs, line);
+		// Save sprite tile to vector tilemap
+		vector<LPSPRITE> spriteline;
+		stringstream ss(line);
+		int n;
+
+		while (ss >> n)
+		{
+			int idTile = ID + n;
+			spriteline.push_back(sprites->Get(idTile));
+		}
+
+		tilemap.push_back(spriteline);
+	}
+
+	fs.close();
 }
+
 void Map::LoadMap()
 {
-	ifstream f;
-	f.open(fileMap);
+	CTextures * texture = CTextures::GetInstance();
 
-	char str[MAX_MAP_LINE];
-	int section = MAP_SECTION_UNKNOWN;
-	int row = 0;
-	while (f.getline(str, MAX_MAP_LINE))
+	texture->Add(ID, filePath_texture, D3DCOLOR_XRGB(255, 0, 255));
+
+	LPDIRECT3DTEXTURE9 texTileMap = texture->Get(ID);
+
+
+	int id_sprite = 1;
+	for (UINT i = 0; i < tileRows; i++)
 	{
-		string line(str);
-
-		if (line[0] == '#') continue;	// skip comment lines	
-
-		if (line == "[INFO]") {
-			section = MAP_SECTION_INFO;
-			continue;
-		}
-		if(line == "[TILE_MAP]")
+		for (UINT j = 0; j < tileColumns; j++)
 		{
-			section = MAP_SECTION_TILE_MAP;
-			continue;
-		}
-
-		switch (section)
-		{
-		case MAP_SECTION_INFO: 
-			_ParseSection_MAP_INFO(line); 
-			break;
-		case MAP_SECTION_TILE_MAP: 
-			_ParseSection_MAP_TILE(line, row); 
-			row++;
-			break;
+			int id_SPRITE = ID + id_sprite;
+			sprites->Add(id_SPRITE, tileWidth * j, tileHeight * i, tileWidth * (j + 1), tileHeight * (i + 1), texTileMap);
+			id_sprite++;
 		}
 	}
 }
 
-void Map::_ParseSection_MAP_INFO(string line)
+void Map::Draw()
 {
-	vector<string> tokens = split(line);
+	//Get first and last col belong to camera
+	int firstCol = (int)CGame::GetInstance()->GetCamPos().x / tileWidth;
+	int lastCol = firstCol + (SCREEN_WIDTH / tileWidth);
 
-	if (tokens.size() < 6) return; // skip invalid lines
-	mapRows = atoi(tokens[0].c_str());
-	mapColumns = atoi(tokens[1].c_str());
-	tileWidth = atoi(tokens[2].c_str());
-	tileHeight = atoi(tokens[3].c_str());
-	tileColumns = atoi(tokens[4].c_str());
-	tileRows = atoi(tokens[5].c_str());
-}
-
-void Map::_ParseSection_MAP_TILE(string line, int row)
-{
-	vector<string> tokens = split(line);
-
-	if (tokens.size() < mapColumns) return; // skip invalid lines
-	for (int j = 0; j < mapColumns; j++)
-		tileMap[row][j] = atoi(tokens[j].c_str());
-}
-
-void Map::DrawMap()
-{
-	float cam_x = CGame::GetInstance()->GetCamPos().x;
-	float cam_y = CGame::GetInstance()->GetCamPos().y;
-
-	float remain_x = fmod(cam_x, tileWidth);
-	float remain_y = fmod(cam_y, tileHeight);
-
-	// draw tiles within the viewport only
-	int colCamLeft = cam_x / tileWidth;
-	int rowCamTop = cam_y / tileHeight;
-
-	int colCamRight = colCamLeft + SCREEN_WIDTH / tileWidth + SCREEN_WIDTH / 2;
-	int rowCamBottom = rowCamTop + SCREEN_HEIGHT / tileHeight;
-
-	for (int j = colCamLeft; j <= colCamRight; j++)
+	for (UINT i = 0; i < tileRows; i++)
 	{
-		for (int i = rowCamTop; i < rowCamBottom; i++)
+		for (UINT j = firstCol; j <= lastCol; j++)
 		{
-			float pos_x = (j - colCamLeft) * tileWidth - remain_x + translate_x;
-			float pos_y = (i - rowCamTop) * tileHeight - remain_y + translate_y;
+			float x = tileWidth * (j - firstCol) + CGame::GetInstance()->GetCamPos().x - (int)(CGame::GetInstance()->GetCamPos().x) % tileWidth;
+			float y = tileHeight * i + 80;
 
-			RECT rectTile;
-			int index = tileMap[i][j];
-			rectTile.left = (index % tileColumns) * tileWidth;
-			rectTile.top = (index / tileColumns) * tileHeight;
-			rectTile.right = rectTile.left + tileWidth;
-			rectTile.bottom = rectTile.top + tileHeight;
-
-			CGame::GetInstance()->Draw(pos_x, pos_y, 1, CTextures::GetInstance()->Get(1000), rectTile.left, rectTile.top, rectTile.right, rectTile.bottom);
+			tilemap[i][j]->Draw(0, x, y);
 		}
 	}
-}
-
-void Map::SetMap(string path)
-{
-	fileMap = path;
-}
-
-int Map::GetMapWidth()
-{
-	return mapColumns * tileWidth;
 }

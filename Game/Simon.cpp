@@ -19,25 +19,12 @@ Simon::Simon(float x, float y) : CGameObject()
 }
 void Simon::Render()
 {
-	int ani = -1;
-	if (state == SIMON_STATE_DIE)
-		ani = SIMON_ANI_DIE;
-	else
-	{
-		if (vx == 0)
-		{
-			ani = SIMON_ANI_IDLE;
-		}
-		else ani = SIMON_ANI_WALKING;
-
-	}
-
 	int alpha = 255;
 	if (untouchable) alpha = 128;
 
-	animation_set->at(ani)->Render(x, y, nx, alpha);
+	animation_set->at(state)->Render(x, y, nx, alpha);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 void Simon::SetState(int state)
 {
@@ -58,12 +45,17 @@ void Simon::SetState(int state)
 	case SIMON_STATE_JUMP:
 		// TODO: need to check if Mario is *current* on a platform before allowing to jump again
 		vy = -SIMON_JUMP_SPEED_Y;
+		isOnGround = false;
+		//animation_set->at(state)->setStartFrameTime(GetTickCount());
 		break;
 	case SIMON_STATE_IDLE:
 		vx = 0;
 		break;
 	case SIMON_STATE_DIE:
 		vy = -SIMON_DIE_DEFLECT_SPEED;
+		break;
+	case SIMON_STATE_HIT:
+		vx = 0;
 		break;
 	}
 }
@@ -72,16 +64,8 @@ void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 	left = x;
 	top = y;
 
-	/*if (level == SIMON_LEVEL_BIG)
-	{
-	right = x + SIMON_BIG_BBOX_WIDTH;
-	bottom = y + SIMON_BIG_BBOX_HEIGHT;
-	}*/
-	//else
-	{
-		right = x + SIMON_BBOX_WIDTH;
-		bottom = y + SIMON_BBOX_HEIGHT + 2;
-	}
+	right = x + SIMON_BBOX_WIDTH;
+	bottom = y + SIMON_BBOX_HEIGHT + 2;
 }
 
 /*

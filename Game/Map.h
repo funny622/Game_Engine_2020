@@ -1,5 +1,8 @@
 #pragma once
-#include <string>
+#include <iostream>
+#include <fstream>
+#include<string>
+#include <sstream>
 #include "Utils.h"
 #include "Sprites.h"
 #include "Textures.h"
@@ -11,33 +14,23 @@
 using namespace std;
 class Map
 {
-private:
+	CSprites * sprites = CSprites::GetInstance();
+	LPCWSTR filePath_data;
+	LPCWSTR filePath_texture;
+
 	int ID;
 
-	int tileWidth;
-	int tileHeight;
-
-	int translate_y, translate_x;
+	int tileWidth, tileHeight;
 	int tileRows, tileColumns;
-	int mapRows;
-	int mapColumns;
+	int mapRows, mapColumns;
 
-	int tileMap[500][500];
-
-	string fileMap;
-	void _ParseSection_MAP_INFO(string line);
-	void _ParseSection_MAP_TILE(string line, int row);
+	vector<vector<LPSPRITE>> tilemap;
 public:
-	Map();
+	Map(int ID, LPCWSTR filePath_texture, LPCWSTR filePath_data, int mapRows, int mapColumns, int tileRows, int tileColumns, int tileWidth = 32, int tileHeight = 32);
 	~Map();
-	CGame * game = CGame::GetInstance();
-	CTextures* textures = CTextures::GetInstance();
-
-	Map(int _id, int _translate_y, int _translate_x);
-	// RECT GetSourceRect(int index);
-	void SetMap(string path);
+	int GetWidthMap() { return tileColumns * tileWidth; }
+	void Load();
 	void LoadMap();
-	void DrawMap();
-	int GetMapWidth();
+	void Draw();
 };
 

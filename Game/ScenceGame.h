@@ -43,7 +43,6 @@ public:
 	Simon * GetPlayer() { return player; }
 	CWhip * GetWhip() { return whip; }
 	CWeapon * GetWeapon() { return weapon; }
-	virtual void LoadMap();
 	void WhipUpdate(DWORD dt, int x, int y);
 	//friend class CPlayScenceKeyHandler;
 };

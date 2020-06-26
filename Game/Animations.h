@@ -23,6 +23,7 @@ typedef CAnimationFrame *LPANIMATION_FRAME;
 
 class CAnimation
 {
+	DWORD startFrameTime;
 	DWORD lastFrameTime;
 	int currentFrame;
 	int defaultTime;
@@ -30,7 +31,8 @@ class CAnimation
 public:
 	CAnimation(int defaultTime = 100) { this->defaultTime = defaultTime; lastFrameTime = -1; currentFrame = -1; }
 	void Add(int spriteId, DWORD time = 0);
-
+	void setStartFrameTime(DWORD t) { startFrameTime = t; }
+	void resetAnimation() { currentFrame = -1; }
 	void Render(float x, float y, int nx = -1, int alpha = 255);
 };
 

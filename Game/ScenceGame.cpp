@@ -15,7 +15,6 @@ CScenceGame::CScenceGame(int id, LPCWSTR filePath) :
 	CScenceManager(id, filePath)
 {
 	key_handler = new CPlayScenceKeyHandler(this);
-	map = new Map();
 }
 
 /*
@@ -37,6 +36,10 @@ See scene1.txt, scene2.txt for detail format specification
 #define OBJECT_TYPE_KOOPAS	3
 #define OBJECT_TYPE_CANDLE	4
 #define OBJECT_TYPE_TORCH	5
+#define OBJECT_TYPE_WHIP	20
+#define OBJECT_TYPE_ITEM	30
+
+#define OBJECT_TYPE_WHIP_ANI	24
 
 #define OBJECT_TYPE_PORTAL	50
 #define MAP_1 1000
@@ -128,10 +131,20 @@ void CScenceGame::_ParseSection_ANIMATION_SETS(string line)
 void CScenceGame::_ParseSection_MAP(string line)
 {
 	vector<string> tokens = split(line);
-	if (tokens.size() < 2) return;
-	int map_id = atoi(tokens[0].c_str());
-	map = new Map(map_id, 0, 0);
-	map->SetMap(tokens[1]);
+
+	if (tokens.size() < 7) return; // skip invalid lines
+
+	int ID = atoi(tokens[0].c_str());
+	wstring filePath_texture = ToWSTR(tokens[1]);
+	wstring filePath_data = ToWSTR(tokens[2]);
+	int mapRows = atoi(tokens[3].c_str());
+	int mapColumns = atoi(tokens[4].c_str());
+	int tileRows = atoi(tokens[5].c_str());
+	int tileColumns = atoi(tokens[6].c_str());
+	int tileWidth = atoi(tokens[7].c_str());
+	int tileHeight = atoi(tokens[8].c_str());
+
+	map = new Map(ID, filePath_texture.c_str(), filePath_data.c_str(), mapRows, mapColumns, tileRows, tileColumns, tileWidth, tileHeight);
 }
 /*
 Parse a line in section [OBJECTS]
@@ -161,7 +174,7 @@ void CScenceGame::_ParseSection_OBJECTS(string line)
 		}
 		obj = new Simon(x, y);
 		player = (Simon*)obj;
-
+		whip = new CWhip();
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
@@ -197,11 +210,9 @@ void CScenceGame::_ParseSection_OBJECTS(string line)
 
 	obj->SetAnimationSet(ani_set);
 	objects.push_back(obj);
-}
 
-void CScenceGame::LoadMap()
-{
-	map->LoadMap();
+	LPANIMATION_SET ani_set_whip = animation_sets->Get(OBJECT_TYPE_WHIP_ANI);
+	whip->SetAnimationSet(ani_set_whip);
 }
 
 void CScenceGame::Load()
@@ -254,7 +265,6 @@ void CScenceGame::Load()
 	f.close();
 
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
-	LoadMap();
 }
 
 void CScenceGame::Update(DWORD dt)
@@ -280,29 +290,49 @@ void CScenceGame::Update(DWORD dt)
 	float cx, cy;
 	player->GetPosition(cx, cy);
 
-	CGame *game = CGame::GetInstance();
-	int d = game->GetScreenWidth();
-	cx -= game->GetScreenWidth() / 2;
+	CGame* game = CGame::GetInstance();
+	cx += game->GetScreenWidth() / 2;
+	cy -= game->GetScreenHeight() / 2;
+
 	if (cx < 0)
 	{
 		cx = 0;
 	}
-	int mapWidth = map->GetMapWidth();
-	if (cx > mapWidth - 320)
-	{
-		cx = mapWidth - 320;
-	}
-	cy -= game->GetScreenHeight() / 2;
 
 	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+
+	if (player->x > (SCREEN_WIDTH / 2) && player->x + (SCREEN_WIDTH / 2) < map->GetWidthMap())
+	{
+		cx = player->x - (SCREEN_WIDTH / 2);
+		CGame::GetInstance()->SetCamPos(cx, 0.0f);
+	}
+
+	//if (weapon->x < cx + SCREEN_WIDTH && weapon->x > cx && weapon->y < cy + SCREEN_HEIGHT && weapon->isEnable())
+	//{
+	//	coObjects.push_back(player);
+	//	weapon->Update(dt, &coObjects);
+	//}
+	//else
+	//{
+	//	weapon->enable = false;
+	//}
 }
 
 void CScenceGame::Render()
 {
-	map->DrawMap();
+	map->Draw();
 	for (int i = 0; i < objects.size(); i++)
 		objects[i]->Render();
-	CGame* game = CGame::GetInstance();
+
+	if (player->GetState() == SIMON_STATE_HIT)
+	{
+		if (player->GetIsThrowWeapon() == false && whip != NULL)
+		{
+			whip->nx = player->nx;
+			whip->Render();
+		}
+	}
+	else whip->enable = false;
 }
 
 /*
@@ -325,7 +355,24 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
-		simon->SetState(SIMON_STATE_JUMP);
+		if (simon->GetState() == SIMON_STATE_JUMP)
+		{
+			return;
+		}
+		else
+		{
+			simon->SetState(SIMON_STATE_JUMP);
+		}
+		break;
+	case DIK_Z:
+		whip->enable = true;
+		whip->StartHit();
+		if (simon->GetState() == SIMON_STATE_HIT)
+		{
+			return;
+		}
+		simon->SetIsThrowWeapon(false);
+		simon->SetState(SIMON_STATE_HIT);
 		break;
 	case DIK_A:
 		simon->Reset();
@@ -340,18 +387,27 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 
 	// disable control key when Mario die 
 	if (simon->GetState() == SIMON_STATE_DIE) return;
-	if (game->IsKeyDown(DIK_RIGHT))		//simon->SetState(SIMON_STATE_WALKING_RIGHT);
+	if (simon->GetState() == SIMON_STATE_JUMP && !simon->CheckStandGround())
+	{
+		return;
+	}
+	if (game->IsKeyDown(DIK_RIGHT))	
 	{
 		simon->SetOrientation(1);
 		simon->SetState(SIMON_STATE_WALKING);
+		simon->SetIsStand(false);
 	}
 	else if (game->IsKeyDown(DIK_LEFT))
 	{
 		simon->SetOrientation(-1);
 		simon->SetState(SIMON_STATE_WALKING);
+		simon->SetIsStand(false);
 	}
 	else
+	{
 		simon->SetState(SIMON_STATE_IDLE);
+		simon->SetIsStand(false);
+	}
 }
 
 void CScenceGame::RemoveObjects()
